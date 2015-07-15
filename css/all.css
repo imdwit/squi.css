@@ -1,0 +1,10 @@
+.page1 {
+	background-color: green;
+}.page2 {
+	background-color: skyblue;
+	padding: 4px;
+}.page3 {
+	outline: 1px solid red;
+	padding: 20px;
+	background-color: red;
+}
