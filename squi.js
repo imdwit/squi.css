@@ -1,20 +1,26 @@
 var fs = require('fs');
 var through = require('through2');
 var split = require('split');
+var single = /'(.*)'/;
+var dbl = /"(.*)"/;
 var output = fs.createWriteStream('./css/all.css');
 
 var stream = fs.createReadStream('./css/main.css');
+
 stream.on('error', function(err) {
 	console.log('stream err', err);
-})
+});
+
 var tr = through(function(buf, _, next) {
 	var that = this;
 	var line = buf.toString();
-	var i = line.indexOf('"');
-	var j = line.lastIndexOf('"');
-	var src = line.substring(i + 1, j);
+	var src = line.match(single) || line.match(dbl);
+	if(!src || !src[1]) {
+		return next();
+	}
 
-	var css = fs.createReadStream('./css/' + src);
+	var url = './css/' + src[1];
+	var css = fs.createReadStream(url);
 	var str = '';
 
 	css
@@ -31,8 +37,7 @@ var tr = through(function(buf, _, next) {
 });
 
 tr.on('error', function(err) {
-	
-})
+});
 
 stream.pipe(split()).pipe(tr).pipe(output);
 
